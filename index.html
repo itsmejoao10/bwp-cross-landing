@@ -169,13 +169,17 @@
       gap: 10px;
       margin-bottom: 20px;
     }
-    .hero-eyebrow-line { width: 28px; height: 2px; background: var(--accent); flex-shrink: 0; }
+    .hero-eyebrow-line { width: 28px; height: 2px; background: rgba(255,255,255,.5); flex-shrink: 0; }
     .hero-eyebrow span {
       font-size: 12px;
       font-weight: 600;
       letter-spacing: .1em;
       text-transform: uppercase;
-      color: var(--accent);
+      color: rgba(255,255,255,.75);
+      background: rgba(0,0,0,.35);
+      padding: 3px 10px;
+      border-radius: 100px;
+      border: 1px solid rgba(255,255,255,.18);
     }
     .hero-title {
       font-size: clamp(40px, 10vw, 72px);
@@ -1160,20 +1164,6 @@
     </div>
 
     <!-- Bundle card -->
-    <div class="bundle-card" style="margin-top:16px;">
-      <div class="bundle-row">
-        <div>
-          <div class="bundle-badge">Melhor custo-benefício</div>
-          <div class="prog-name">Bundle Completo</div>
-          <div class="prog-desc" style="max-width:500px;margin-bottom:0;">Acesso às 6 programações. Para quem quer ter opção para qualquer tipo de turma ou aluno.</div>
-        </div>
-        <div class="bundle-price-col">
-          <div class="bundle-orig">R$ 2.044</div>
-          <div class="bundle-val">R$ 947</div>
-          <div class="bundle-installment">ou 12x de R$97/mês</div>
-        </div>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -1299,7 +1289,6 @@
         <div class="t-author">
           <div class="t-avatar ta1">MR</div>
           <div>
-            <div class="t-name">Marcos R.</div>
             <div class="t-meta">Dono de box · São Paulo, SP</div>
           </div>
         </div>
@@ -1310,7 +1299,6 @@
         <div class="t-author">
           <div class="t-avatar ta2">FL</div>
           <div>
-            <div class="t-name">Fernanda L.</div>
             <div class="t-meta">Head coach · Belo Horizonte, MG</div>
           </div>
         </div>
@@ -1321,7 +1309,6 @@
         <div class="t-author">
           <div class="t-avatar ta3">RC</div>
           <div>
-            <div class="t-name">Rafael C.</div>
             <div class="t-meta">Proprietário · Curitiba, PR</div>
           </div>
         </div>
@@ -1332,7 +1319,6 @@
         <div class="t-author">
           <div class="t-avatar ta4">JA</div>
           <div>
-            <div class="t-name">Juliana A.</div>
             <div class="t-meta">Coach e sócia de box · Brasília, DF</div>
           </div>
         </div>
