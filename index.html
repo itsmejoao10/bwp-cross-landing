@@ -713,6 +713,30 @@
     .guarantee-box h2 { margin-bottom: 14px; }
     .guarantee-box p { font-size: 15px; color: var(--text-muted); line-height: 1.7; }
 
+    /* ─── CAROUSEL DOTS ──────────────────────────────── */
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 14px;
+    }
+    @media (min-width: 768px) { .carousel-dots { display: none; } }
+    .carousel-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: background .3s, width .3s;
+      cursor: pointer;
+      border: none;
+      padding: 0;
+      flex-shrink: 0;
+    }
+    .carousel-dot.active {
+      background: var(--accent);
+      width: 18px;
+      border-radius: 4px;
+    }
+
     /* ─── VIDEO TESTIMONIAL ───────────────────────────── */
     .video-testimonial-wrap {
       display: flex;
@@ -963,7 +987,7 @@
 
 <!-- ATHLETE PHOTOS -->
 <section id="athletes">
-  <div class="athletes-track">
+  <div class="athletes-track" id="athletesTrack">
     <div class="athlete-photo">
       <img
         src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&h=800&q=80"
@@ -1001,6 +1025,7 @@
       </div>
     </div>
   </div>
+  <div class="carousel-dots" id="athletesDots"></div>
 </section>
 
 <!-- PAIN -->
@@ -1267,7 +1292,7 @@
       </div>
     </div>
 
-    <div class="testimonials-scroll">
+    <div class="testimonials-scroll" id="testimonialsTrack">
       <div class="testimonial-card">
         <div class="t-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
         <p class="t-text">"Passei um ano improvisando treino toda semana. Depois do BWP Cross, meu domingo virou dia de descanso de verdade. Meus alunos sentiram a diferença nas primeiras semanas, a progressão ficou clara e a retenção melhorou muito."</p>
@@ -1313,6 +1338,7 @@
         </div>
       </div>
     </div>
+    <div class="carousel-dots" id="testimonialsDots"></div>
   </div>
 </section>
 
@@ -1467,7 +1493,7 @@
     });
   });
 
-  // Mobile sticky CTA - shows after scrolling past hero
+  // Mobile sticky CTA
   const mobileCta = document.getElementById('mobile-cta');
   const hero = document.getElementById('hero');
   if (mobileCta && hero) {
@@ -1476,6 +1502,89 @@
     }, { threshold: 0.1 });
     io.observe(hero);
   }
+
+  // ── AUTO-SCROLL CAROUSEL ───────────────────────────────
+  function initCarousel(trackId, dotsId, intervalMs) {
+    const track = document.getElementById(trackId);
+    const dotsWrap = document.getElementById(dotsId);
+    if (!track || !dotsWrap) return;
+
+    const items = Array.from(track.children);
+    let current = 0;
+    let timer = null;
+    let isDragging = false;
+
+    // Build dots
+    items.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Item ' + (i + 1));
+      dot.addEventListener('click', () => { goTo(i); resetTimer(); });
+      dotsWrap.appendChild(dot);
+    });
+
+    function updateDots(idx) {
+      dotsWrap.querySelectorAll('.carousel-dot').forEach((d, i) => {
+        d.classList.toggle('active', i === idx);
+      });
+    }
+
+    function goTo(idx) {
+      current = (idx + items.length) % items.length;
+      const item = items[current];
+      track.scrollTo({ left: item.offsetLeft, behavior: 'smooth' });
+      updateDots(current);
+    }
+
+    function next() { goTo(current + 1); }
+
+    function startTimer() {
+      timer = setInterval(next, intervalMs);
+    }
+
+    function resetTimer() {
+      clearInterval(timer);
+      startTimer();
+    }
+
+    // Detect manual scroll to update dots & reset timer
+    let scrollTimeout;
+    track.addEventListener('scroll', () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        if (isDragging) return;
+        // Find which item is most visible
+        let closest = 0;
+        let minDist = Infinity;
+        items.forEach((el, i) => {
+          const dist = Math.abs(el.offsetLeft - track.scrollLeft);
+          if (dist < minDist) { minDist = dist; closest = i; }
+        });
+        if (closest !== current) { current = closest; updateDots(current); }
+      }, 80);
+    }, { passive: true });
+
+    // Pause on touch/drag, resume after
+    track.addEventListener('touchstart', () => { isDragging = true; clearInterval(timer); }, { passive: true });
+    track.addEventListener('touchend', () => {
+      isDragging = false;
+      // allow scroll snap to settle, then resume
+      setTimeout(resetTimer, 600);
+    }, { passive: true });
+
+    // Only auto-scroll on mobile (track has overflow-x: auto)
+    function maybeStart() {
+      if (window.innerWidth < 768) startTimer();
+    }
+    maybeStart();
+    window.addEventListener('resize', () => {
+      clearInterval(timer);
+      if (window.innerWidth < 768) startTimer();
+    });
+  }
+
+  initCarousel('athletesTrack',    'athletesDots',    6000);
+  initCarousel('testimonialsTrack','testimonialsDots', 6000);
 </script>
 </body>
 </html>
